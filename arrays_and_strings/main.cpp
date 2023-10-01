@@ -2,12 +2,13 @@
 #include <iostream>
 #include <limits>
 #include <map>
+#include <algorithm>
 #include <catch2/catch_all.hpp>
 
 // 1.1 is unique?
 // assumptions - all characters are ascii
 // can't use any other data structures
-bool is_unique(const std::string str) {
+bool is_unique(std::string str) {
 	
 	for (int i = 0; i < str.size(); i++) {
 		for (int j = 0; j < str.size(); j++) {
@@ -20,7 +21,7 @@ bool is_unique(const std::string str) {
 	return true;
 }
 
-bool is_unique_alt(const std::string str)
+bool is_unique_alt(std::string str)
 {
 	bool chars_encountered[std::numeric_limits<char>::max()] = {false};
 	for (int i = 0; i < str.size(); i++) {
@@ -51,7 +52,7 @@ TEST_CASE("is_unique")
 // if different lengths - not permutations
 // if have any different characters - not permutations
 // need to have same characters, in same frequency
-bool is_permutation(const std::string str1, const std::string str2)
+bool is_permutation(std::string str1, std::string str2)
 {
 	if (str1.size() != str2.size()) {
 		return false;
@@ -97,7 +98,7 @@ TEST_CASE("is_permutation")
 
 // 1.3 - urlify
 // this approach will create a new string
-std::string urlify(const std::string str) {
+std::string urlify(std::string str) {
 	std::string result = "";
 	for (int i = 0; i < str.size(); i++) {
 		char c = str[i];
@@ -142,7 +143,7 @@ void urlify_in_place(std::string &str) {
 	}
 }
 
-TEST_CASE("urlify test")
+TEST_CASE("urlify")
 {
 	std::string str = "Hello World";
 	REQUIRE(urlify(str) == "Hello%20World");
@@ -154,5 +155,60 @@ TEST_CASE("urlify test")
 		std::string str2 = "Hi my name is bob! ";
 		urlify_in_place(str2);
 		REQUIRE(str2 == "Hi%20my%20name%20is%20bob!%20");
+	}
+}
+
+// 1.4 palindrome permutation
+bool is_palindrom_permutation(std::string str) {
+	int char_freq[std::numeric_limits<char>::max()] = { 0 };
+	int char_count = 0;
+	
+	for (int idx = 0; idx < str.size(); idx++) {
+		char c = str[idx];
+		// ignore non-alpha characters
+		if (std::isalpha(c)) {
+			// ignore cases
+			c = std::tolower(c);
+			char_freq[c]++;
+			char_count++;
+		}
+	}
+
+	// if the string length is odd, 1 character can be odd as it would be in the middle but the rest must be even
+	int num_odd = 0;
+	// we've only stored the lower case alpha numeric characters so let's just iterate over them
+	for (char i = 'a'; i <= 'z'; i++) {
+		int freq = char_freq[i];
+		
+		if (freq != 0 && freq % 2 != 0) {
+			num_odd++;
+		}
+	}
+
+	// if even
+	if (char_count % 2 == 0 && num_odd > 0) {
+		return false;
+	}
+	else if (char_count % 2 != 0 && num_odd > 1) {
+		return false;
+	}
+	return true;
+}
+
+TEST_CASE("palindrome permutation")
+{
+	{
+		std::string str = "Badb Doa";
+		REQUIRE(is_palindrom_permutation(str) == true);
+	}
+
+	{
+		std::string str = "abcabc";
+		REQUIRE(is_palindrom_permutation(str) == true);
+	}
+
+	{
+		std::string str = "aabbbc";
+		REQUIRE(is_palindrom_permutation(str) == false);
 	}
 }
