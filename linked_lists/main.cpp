@@ -6,19 +6,21 @@
 #include <algorithm>
 #include <catch2/catch_all.hpp>
 
+template <typename T>
 struct node
 {
-	std::string value = "";
+	T value;
 	node* next = nullptr;
 };
 
-node* create_linked_list(std::vector<std::string> values)
+template <typename T>
+node<T>* create_linked_list(std::vector<T> values)
 {
-	node* head = nullptr;
-	node* last = nullptr;
+	node<T>* head = nullptr;
+	node<T>* last = nullptr;
 
 	for (auto value : values) {
-		node * current = new node();
+		auto current = new node<T>();
 		current->value = value;
 		if (head == nullptr) {
 			head = current;
@@ -33,9 +35,10 @@ node* create_linked_list(std::vector<std::string> values)
 	return head;
 }
 
-bool match(node* head, std::vector<std::string> values)
+template <typename T>
+bool match(node<T>* head, std::vector<T> values)
 {
-	node* current = head;
+	auto current = head;
 	std::vector<std::string> list_contents;
 	while (current != nullptr) {
 		list_contents.push_back(current->value);
@@ -56,7 +59,8 @@ bool match(node* head, std::vector<std::string> values)
 }
 
 // 2.1
-void remove_dupes(node* node) {
+template <typename T>
+void remove_dupes(node<T>* node) {
 	while (node != nullptr) {
 		if (node->next != nullptr && node->value == node->next->value) {
 			node->next = node->next->next;
@@ -68,16 +72,17 @@ void remove_dupes(node* node) {
 TEST_CASE("remove dups")
 {
 	std::vector<std::string> values = { "a","b","b","c" };
-	node* list = create_linked_list(values);
+	auto list = create_linked_list(values);
 	remove_dupes(list);
 
 	REQUIRE(match(list, { "a","b","c" }) == true);
 }
 
-int get_length(node* head)
+template<typename T>
+int get_length(node<T>* head)
 {
 	int length = 0;
-	node* current = head;
+	auto current = head;
 	while (current != nullptr) {
 		length++;
 		current = current->next;
@@ -90,11 +95,12 @@ int get_length(node* head)
 // k:      3    2    1    0
 // i:      0    1    2    3
 // length: 4
-node* get_kth_to_last_node(node* head, int k) {
+template <typename T>
+node<T>* get_kth_to_last_node(node<T>* head, int k) {
 	int length = get_length(head);
 
 	int target = (length - 1) - k;
-	node* current = head;
+	auto current = head;
 	for (int count = 0; count < target; count++) {
 		current = current->next;
 	}
@@ -105,8 +111,8 @@ node* get_kth_to_last_node(node* head, int k) {
 TEST_CASE("return kth")
 {
 	std::vector<std::string> values = { "a","b","c" };
-	node* list = create_linked_list(values);
-	node* result = get_kth_to_last_node(list, 1);
+	auto list = create_linked_list(values);
+	auto result = get_kth_to_last_node(list, 1);
 
 	REQUIRE(result->value == "b");
 }
@@ -114,11 +120,12 @@ TEST_CASE("return kth")
 // 2.3
 // arbitrary node in between first and last
 // with no awareness of the parent node
-void delete_node(node* to_delete)
+template <typename T>
+void delete_node(node<T>* to_delete)
 {
 	// if this is false, there is nothing we can do
 	// as we are at the end of the list
-	node* next = to_delete->next;
+	auto next = to_delete->next;
 	if (next != nullptr) {
 		// we turn this node into the next node and delete the next node instead
 		to_delete->value = next->value;
@@ -130,10 +137,12 @@ void delete_node(node* to_delete)
 TEST_CASE("delete middle")
 {
 	std::vector<std::string> values = { "a","b","c" };
-	node* list = create_linked_list(values);
+	auto list = create_linked_list(values);
 
-	node* to_delete = list->next;
+	auto to_delete = list->next;
 	delete_node(to_delete);
 
 	REQUIRE(match(list, { "a","c" }) == true);
 }
+
+// 2.4 partition
