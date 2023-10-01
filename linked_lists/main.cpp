@@ -67,11 +67,46 @@ void remove_dupes(node* node) {
 
 TEST_CASE("remove dups")
 {
-	{
-		std::vector<std::string> values= { "a","b","b","c" };
-		node* list = create_linked_list(values);
-		remove_dupes(list);
+	std::vector<std::string> values = { "a","b","b","c" };
+	node* list = create_linked_list(values);
+	remove_dupes(list);
 
-		REQUIRE(match(list, { "a","b","c" }) == true);
+	REQUIRE(match(list, { "a","b","c" }) == true);
+}
+
+int get_length(node* head)
+{
+	int length = 0;
+	node* current = head;
+	while (current != nullptr) {
+		length++;
+		current = current->next;
 	}
+	return length;
+}
+
+// 2.2
+// values: a -> b -> c -> d
+// k:      3    2    1    0
+// i:      0    1    2    3
+// length: 4
+node* get_kth_to_last_node(node* head, int k) {
+	int length = get_length(head);
+
+	int target = (length - 1) - k;
+	node* current = head;
+	for (int count = 0; count < target; count++) {
+		current = current->next;
+	}
+
+	return current;
+}
+
+TEST_CASE("return kth")
+{
+	std::vector<std::string> values = { "a","b","c" };
+	node* list = create_linked_list(values);
+	node* result = get_kth_to_last_node(list, 1);
+
+	REQUIRE(result->value == "b");
 }
