@@ -110,3 +110,30 @@ TEST_CASE("return kth")
 
 	REQUIRE(result->value == "b");
 }
+
+// 2.3
+// arbitrary node in between first and last
+// with no awareness of the parent node
+void delete_node(node* to_delete)
+{
+	// if this is false, there is nothing we can do
+	// as we are at the end of the list
+	node* next = to_delete->next;
+	if (next != nullptr) {
+		// we turn this node into the next node and delete the next node instead
+		to_delete->value = next->value;
+		to_delete->next = next->next;
+		delete next;
+	}
+}
+
+TEST_CASE("delete middle")
+{
+	std::vector<std::string> values = { "a","b","c" };
+	node* list = create_linked_list(values);
+
+	node* to_delete = list->next;
+	delete_node(to_delete);
+
+	REQUIRE(match(list, { "a","c" }) == true);
+}
