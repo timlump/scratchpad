@@ -39,7 +39,7 @@ template <typename T>
 bool match(node<T>* head, std::vector<T> values)
 {
 	auto current = head;
-	std::vector<std::string> list_contents;
+	std::vector<T> list_contents;
 	while (current != nullptr) {
 		list_contents.push_back(current->value);
 		current = current->next;
@@ -146,3 +146,54 @@ TEST_CASE("delete middle")
 }
 
 // 2.4 partition
+// everything gets move left if its less than X
+node<int>* paritition(node<int>* head, int x)
+{
+	std::vector<node<int>*> left;
+	std::vector<node<int>*> right;
+
+	auto current = head;
+
+	// split
+	while (current != nullptr) {
+		if (current->value < x) {
+			left.push_back(current);
+		}
+		else {
+			right.push_back(current);
+		}
+		current = current->next;
+	}
+
+	// connect up nodes
+	for (int idx = 0; idx < left.size() - 1; idx++) {
+		left[idx]->next = left[idx + 1];
+	}
+
+	for (int idx = 0; idx < right.size() - 1; idx++) {
+		right[idx]->next = right[idx + 1];
+	}
+
+	node<int>* new_head = left.empty() == false ? *left.begin() : *right.begin();
+
+	// make sure the final next value is null
+	if (right.empty() == false) {
+		(*right.rbegin())->next = nullptr;
+		// stich left and right together
+		if (left.empty() == false) {
+			(*left.rbegin())->next = (*right.begin());
+		}
+	}
+	else {
+		(*left.rbegin())->next = nullptr;
+	}
+
+	return new_head;
+}
+
+TEST_CASE("partition")
+{
+	auto head = create_linked_list<int>({ 3,5,8,5,10,2,1 });
+	head = paritition(head, 5);
+	REQUIRE(match<int>(head, { 3,2,1,5,8,5,10 }));
+}
