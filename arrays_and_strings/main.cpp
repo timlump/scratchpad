@@ -378,3 +378,5 @@ TEST_CASE("transpose matrix") {
 		REQUIRE(mat1.mat[2][2] == 3);
 	}
 }
+
+// todo 1.8 and 1.9 later
