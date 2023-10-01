@@ -260,3 +260,37 @@ TEST_CASE("one edit away")
 		REQUIRE(is_one_or_zero_edits_away(str1, str2) == true);
 	}
 }
+
+std::string str_compress(std::string original) {
+	std::stringstream stream;
+	int count = 0;
+	for (int idx = 0; idx < original.size(); idx++) {
+		char c = original[idx];
+		count++;
+		
+		// if character is changing or we are at the end of the line
+		if (idx == original.size() - 1 || original[idx+1] != c) {
+			stream << c << count;
+			count = 0;
+		}
+	}
+
+	std::string result = stream.str();
+	if (result.size() > original.size()) {
+		return original;
+	}
+	return result;
+}
+
+TEST_CASE("string compression")
+{
+	{
+		std::string str = "aaaabbbbccdddde";
+		REQUIRE(str_compress(str) == "a4b4c2d4e1");
+	}
+
+	{
+		std::string str = "abcd";
+		REQUIRE(str_compress(str) == "abcd");
+	}
+}
