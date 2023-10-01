@@ -294,3 +294,87 @@ TEST_CASE("string compression")
 		REQUIRE(str_compress(str) == "abcd");
 	}
 }
+
+struct matrix
+{
+	int dim = 0;
+	int** mat = nullptr;
+	matrix(int dim)
+	{
+		this->dim = dim;
+		this->mat = create();
+	}
+
+	~matrix() {
+		erase();
+	}
+
+	int** create() {
+		int** temp = new int* [dim];
+		for (int r = 0; r < dim; r++) {
+			temp[r] = new int[dim];
+		}
+		return temp;
+	}
+
+	void erase() {
+		for (int r = 0; r < dim; r++) {
+			delete[] mat[r];
+		}
+		delete[] mat;
+	}
+
+	void transpose()
+	{
+		int** temp = create();
+
+		for (int row = 0; row < dim; row++) {
+			for (int col = 0; col < dim; col++) {
+				int new_row = col;
+				int new_col = (dim - 1) - row;
+				temp[new_row][new_col] = mat[row][col];
+			}
+		}
+
+		erase();
+
+		// replace
+		mat = temp;
+	}
+};
+
+TEST_CASE("transpose matrix") {
+	{
+		/*
+			1 2 3
+			4 5 6
+			7 8 9
+		*/
+		matrix mat1(3);
+		mat1.mat[0][0] = 1;
+		mat1.mat[0][1] = 2;
+		mat1.mat[0][2] = 3;
+		mat1.mat[1][0] = 4;
+		mat1.mat[1][1] = 5;
+		mat1.mat[1][2] = 6;
+		mat1.mat[2][0] = 7;
+		mat1.mat[2][1] = 8;
+		mat1.mat[2][2] = 9;
+
+		/*
+			1 2 3     7 4 1
+			4 5 6  -> 8 5 2
+			7 8 9     9 6 3
+		*/
+		mat1.transpose();
+		REQUIRE(mat1.mat[0][0] == 7);
+		REQUIRE(mat1.mat[0][1] == 4);
+		REQUIRE(mat1.mat[0][2] == 1);
+		REQUIRE(mat1.mat[1][0] == 8);
+		REQUIRE(mat1.mat[1][1] == 5);
+		REQUIRE(mat1.mat[1][2] == 2);
+		REQUIRE(mat1.mat[2][0] == 9);
+		REQUIRE(mat1.mat[2][1] == 6);
+		REQUIRE(mat1.mat[2][2] == 3);
+	}
+}
