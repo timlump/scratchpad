@@ -212,3 +212,51 @@ TEST_CASE("palindrome permutation")
 		REQUIRE(is_palindrom_permutation(str) == false);
 	}
 }
+
+// 1.4
+bool is_one_or_zero_edits_away(std::string str1, std::string str2)
+{
+	int char_freq1[std::numeric_limits<char>::max()] = { 0 };
+	int char_freq2[std::numeric_limits<char>::max()] = { 0 };
+
+	for (int idx = 0; idx < str1.size(); idx++) {
+		char c = str1[idx];
+		char_freq1[c]++;
+	}
+
+	for (int idx = 0; idx < str2.size(); idx++) {
+		char c = str2[idx];
+		char_freq2[c]++;
+	}
+
+	int num_differences = 0;
+	for (int idx = 0; idx < std::numeric_limits<char>::max(); idx++) {
+		num_differences += std::abs(char_freq2[idx] - char_freq1[idx]);
+		if (num_differences > 1) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+TEST_CASE("one edit away")
+{
+	{
+		std::string str1 = "drop";
+		std::string str2 = "drops";
+		REQUIRE(is_one_or_zero_edits_away(str1, str2) == true);
+	}
+
+	{
+		std::string str1 = "prop";
+		std::string str2 = "drops";
+		REQUIRE(is_one_or_zero_edits_away(str1, str2) == false);
+	}
+
+	{
+		std::string str1 = "throw";
+		std::string str2 = "throw";
+		REQUIRE(is_one_or_zero_edits_away(str1, str2) == true);
+	}
+}
