@@ -197,3 +197,67 @@ TEST_CASE("partition")
 	head = paritition(head, 5);
 	REQUIRE(match<int>(head, { 3,2,1,5,8,5,10 }));
 }
+
+// 2.5 sum lists
+node<int>* sum(node<int>* list1, node<int>* list2) {
+	bool carry = false;
+	node<int>* result = nullptr;
+	node<int>* last_node = nullptr;
+	while (list1 != nullptr && list2 != nullptr) {
+		int value = list1->value + list2->value;
+		if (carry) {
+			value += 10;
+		}
+
+		carry = value >= 10;
+		if (carry) {
+			value = value - 10;
+		}
+
+		auto temp = new node<int>();
+		temp->value = value;
+
+		if (result == nullptr) {
+			result = temp;
+		}
+		else {
+			last_node->next = temp;
+		}
+
+		last_node = temp;
+
+		list1 = list1->next;
+		list2 = list2->next;
+	}
+
+	if (carry) {
+		node<int>* carry_node = new node<int>();
+		carry_node->value = 1;
+		last_node->next = carry_node;
+	}
+
+	return result;
+}
+
+TEST_CASE("sum lists")
+{
+	{
+		// 321
+		auto list1 = create_linked_list<int>({ 1,2,3 });
+		// 532
+		auto list2 = create_linked_list<int>({ 2,3,5 });
+		// 853 -> {3,5,8}
+		auto result = sum(list1, list2);
+		REQUIRE(match<int>(result, { 3,5,8 }));
+	}
+
+	{
+		// 321
+		auto list1 = create_linked_list<int>({ 1,2,3 });
+		// 932
+		auto list2 = create_linked_list<int>({ 2,3,9 });
+		// 1253 -> {3,5,2,1}
+		auto result = sum(list1, list2);
+		REQUIRE(match<int>(result, { 3,5,2,1 }));
+	}
+}
