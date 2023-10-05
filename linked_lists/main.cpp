@@ -261,3 +261,49 @@ TEST_CASE("sum lists")
 		REQUIRE(match<int>(result, { 3,5,2,1 }));
 	}
 }
+
+// if there is no loop - fast_ptr will hit nullptr
+// if there is a loop - slow and fast ptr will hit
+template <typename T>
+node<T>* find_loop_start(node<T>* list_head)
+{
+	auto slow_ptr = list_head;
+	auto fast_ptr = list_head;
+
+	// using do while as the exit condition actually briefly exists at the start
+	do {
+
+		slow_ptr = slow_ptr->next;
+		if (fast_ptr->next == nullptr) {
+			return nullptr;
+		}
+		else {
+			fast_ptr = fast_ptr->next->next;
+		}
+	} while (slow_ptr != fast_ptr);
+
+	// we've hit a collision now to find it
+	slow_ptr = list_head;
+	while (slow_ptr != fast_ptr) {
+		slow_ptr = slow_ptr->next;
+		// fast_ptr doesn't move fast for this step
+		fast_ptr = fast_ptr->next;
+	}
+
+	return slow_ptr;
+}
+
+TEST_CASE("loop detection")
+{
+	// create linked list with loop
+	auto list = create_linked_list<std::string>({ "a","b","c","d","e" });
+	auto node_c = list->next->next;
+	auto node_e = list->next->next->next->next;
+	node_e->next = node_c;
+
+	auto loop_start = find_loop_start(list);
+	REQUIRE(loop_start != nullptr);
+	REQUIRE(loop_start->value == "c");
+}
+
+// todo 2.6-2.7
