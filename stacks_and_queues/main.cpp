@@ -90,3 +90,5 @@ TEST_CASE("stack min") {
 	stk->pop();
 	REQUIRE(stk->get_min() == 5);
 }
+
+// todo all the other questions :)
