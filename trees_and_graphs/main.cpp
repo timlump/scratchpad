@@ -88,3 +88,45 @@ TEST_CASE("route between nodes")
 		REQUIRE(is_route_between(node1, node5) == false);
 	}
 }
+
+// 4.2 
+struct tree_node {
+	tree_node(int val)
+	{
+		value = val;
+		left = nullptr;
+		right = nullptr;
+	}
+	int value;
+	tree_node* left,*right;
+};
+
+tree_node* create_bst(std::vector<int> values, int start_idx, int end_idx)
+{
+	if (end_idx < start_idx) {
+		return nullptr;
+	}
+
+	int mid_point = start_idx + (end_idx - start_idx) / 2;
+	int mid_val = values[mid_point];
+
+	tree_node* head = new tree_node(mid_val);
+	head->left = create_bst(values, start_idx, mid_point - 1);
+	head->right = create_bst(values, mid_point + 1, end_idx);
+
+	return head;
+}
+
+TEST_CASE("minimal tree")
+{
+	std::vector<int> values = { 1,2,3,4,5,6,7};
+	auto head = create_bst(values,0,values.size()-1);
+	REQUIRE(head != nullptr);
+	REQUIRE(head->value == 4);
+	REQUIRE(head->left->value == 2);
+	REQUIRE(head->right->value == 6);
+	REQUIRE(head->left->left->value == 1);
+	REQUIRE(head->left->right->value == 3);
+	REQUIRE(head->right->left->value == 5);
+	REQUIRE(head->right->right->value == 7);
+}
