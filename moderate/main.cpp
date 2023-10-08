@@ -81,3 +81,57 @@ TEST_CASE("word frequency")
 	REQUIRE(word_frequency("when") == 1);
 	REQUIRE(word_frequency("my") == 5);
 }
+
+// 16.3 intersection
+struct point
+{
+	float x;
+	float y;
+};
+
+// equation of a line: y = mx + b
+// where m is the slope = delta y / delta x
+// and b is the y intercept, the value of y when x = 0
+struct line {
+	point start, end;
+	float slope() {
+		float x = end.x - start.x;
+		float y = end.y - start.y;
+
+		if (y == 0) {
+			return 0.f;
+		}
+
+		if (x == 0) {
+			return 1.f;
+		}
+
+		return y / x;
+	}
+
+	float y_intercept()
+	{
+		return start.y - slope() * start.x;
+	}
+
+	point intersection(line b) {
+
+		float temp_x = (b.y_intercept() - y_intercept()) / (slope() - b.slope());
+		float temp_y = temp_x * slope() + y_intercept();
+
+		return { temp_x, temp_y};
+	}
+};
+
+TEST_CASE("intersection")
+{
+	line a = { {0,4}, {3,2} };
+	line b = { {1,1}, {4,4} };
+
+	// not bothering with any div by zero checks
+	auto intersection = a.intersection(b);
+	REQUIRE(intersection.x > 2.3);
+	REQUIRE(intersection.x < 2.6);
+	REQUIRE(intersection.y > 2.3);
+	REQUIRE(intersection.y < 2.6);
+}
