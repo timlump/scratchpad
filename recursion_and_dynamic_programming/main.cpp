@@ -32,3 +32,5 @@ TEST_CASE("triple step")
 	 */
 	REQUIRE(num_ways(3) == 4);
 }
+
+//todo all the rest :)
