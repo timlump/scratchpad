@@ -130,3 +130,5 @@ TEST_CASE("minimal tree")
 	REQUIRE(head->right->left->value == 5);
 	REQUIRE(head->right->right->value == 7);
 }
+
+// todo all the rest of this chapter
